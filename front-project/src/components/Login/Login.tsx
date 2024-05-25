@@ -4,24 +4,34 @@ import "../../GlobalCss/Global.css";
 import { Link } from "react-router-dom";
 import { CustomButton } from "../CustomButton/CustomButton";
 import  CustomInput  from "../CustomInput/CustomInput";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
-  // Estados para armazenar as entradas do usuário
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   // Função que é chamada quando o formulário é enviado
-  // const handleSubmit = (event) => {
-  //   // Impede que a página seja recarregada
-  //   event.preventDefault();
-
-  //   // Faz o console log das credenciais do usuário
-  //   console.log("Dados de Login:", { username, password });
-  // };
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const response = await axios.post("http://localhost:3000/users/login", {
+      email: username,
+      password: password,
+    });
+    if (response.status === 200) {
+      console.log("Usuário logado com sucesso");
+      return navigate("/dashboard");
+    } else {
+      alert("Usuário ou senha incorretos");
+    }
+    // Faz o console log das credenciais do usuário
+    console.log("Dados de Login:", { username, password });
+  };
 
   return (
     <div className="container">
-      <form>
+      <form onSubmit={handleSubmit}>
         <h1>Login</h1>
         <div className="input-field">
           <CustomInput

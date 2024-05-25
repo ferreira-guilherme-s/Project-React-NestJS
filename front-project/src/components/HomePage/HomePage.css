@@ -1,0 +1,93 @@
+.user-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.user-list-item {
+  background-color: #f9f9f9;
+  margin: 10px 0;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-list-item h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5em;
+}
+
+.user-list-item p {
+  margin: 0;
+  color: #666;
+  font-size: 1.2em;
+}
+
+.user-table {
+  width: 60%;
+  margin-top: 20px;
+  font-size: 1.2em;
+}
+
+.user-table th,
+.user-table td {
+  padding: 10px;
+  text-align: left;
+}
+
+.user-table th {
+  color: white;
+  font-weight: bold;
+}
+
+.user-table tr:hover {
+  background-color: #999;
+  cursor: pointer;
+}
+
+.user-table button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 10px;
+  padding: 12px;
+}
+
+.user-table button:last-child {
+  margin-right: 0;
+}
+
+.create-button {
+  background-color: #bbb; /* Cor de fundo cinza claro */
+  border: none;
+  border-radius: 5px; /* Bordas arredondadas */
+  padding: 10px 20px; /* Espaçamento interno para tornar o botão maior */
+  cursor: pointer;
+  font-size: 100%;
+  margin-bottom: 10px;
+  align-self: flex-start;
+  text-decoration: none; /* Remove o sublinhado do texto */
+  color: white; /* Cor do texto preto */
+  transition: background-color 0.3s; /* Transição suave da cor de fundo */
+}
+
+.create-button:hover {
+  background-color: gray; 
+}
+.modal-input {
+  width: 50%; 
+  padding: 10px; 
+  color: #777;
+  -webkit-font-smoothing: subpixel-antialiased;
+  font-style: normal;
+  font-weight: normal;
+}
