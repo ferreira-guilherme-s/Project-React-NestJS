@@ -23,6 +23,8 @@ const Login = () => {
       console.log("Usuário logado com sucesso");
       console.log(response.data.token);
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem("userType", response.data.user.userType)
+      localStorage.setItem("userId", response.data.user.id)
       return navigate("/dashboard");
     } else {
       alert("Usuário ou senha incorretos");

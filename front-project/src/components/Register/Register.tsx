@@ -38,6 +38,7 @@ const Register = () => {
     <div className="container">
       <form onSubmit={handleSubmit}>
         <h1>Crie seu usuário</h1>
+        <input type="hidden" name="userType" value="user" />
         <div className="input-field">
           <CustomInput
             type="text"

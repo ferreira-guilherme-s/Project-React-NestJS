@@ -5,14 +5,19 @@ import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 import Modal from '../Modal/Modal';
 import { CustomButton } from '../CustomButton/CustomButton';
 import { createUser } from '../../utils/CreateUser';
+import { useNavigate } from 'react-router-dom';
 
 interface User {
   id: string;
   name: string;
   email: string;
+  userType: string;
 }
 
 const HomePage = () => {
+  const navigate = useNavigate();
+  const getUserType = localStorage.getItem('userType');
+  const userId = localStorage.getItem('userId');
   const [status, setStatus] = useState('loading');
   const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,6 +29,7 @@ const HomePage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [userType, setUserType] = useState("user");
 
 
   const handleCreate = () => {
@@ -48,8 +54,13 @@ const HomePage = () => {
     event.preventDefault();
     if(selectedUser!== null){
       const response = await axios.put(`http://localhost:3000/users/updateUser/:${selectedUser.id}`, 
-      { name: selectedUser.name, email: selectedUser.email});
+      { name: selectedUser.name, email: selectedUser.email, userType: selectedUser.userType});
       if(response.status === 200) {
+        if(selectedUser.id === userId){
+          alert("Usuário editado com sucesso, faça login novamente");
+          navigate('/');
+          localStorage.clear();
+        }
         window.location.reload();
       } else {
         alert("Erro ao editar usuário");
@@ -64,7 +75,7 @@ const HomePage = () => {
       return;
     }
     try {
-      const create = await createUser({ name, email, password });
+      const create = await createUser({ name, email, password, userType });
       if(create === 201) {
         window.location.reload();
       }
@@ -127,9 +138,20 @@ const HomePage = () => {
   return (
     <>
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <button onClick={handleCreate} className="create-button">
-        <FiPlus /> Criar Usuário
-      </button>
+      <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+        {getUserType === 'admin' ? (
+          <button onClick={handleCreate} className="create-button">
+            <FiPlus /> Criar Usuário
+          </button>
+        ) : null}
+        {userId !== null && userId !== '' && userId !== undefined ? (
+          <button onClick={() => handleEdit(userId)} className="create-button">
+            Meu Perfil
+          </button>
+         ) : null }
+        
+      </div>
+
 
       <table className="user-table">
         <thead>
@@ -144,14 +166,17 @@ const HomePage = () => {
             <tr key={user.id}>
               <td>{user.name}</td>
               <td>{user.email}</td>
-              <td>
-                <button onClick={() => handleEdit(user.id)}>
-                  <FiEdit2 />
-                </button>
-                <button onClick={() => handleDelete(user.id)}>
-                  <FiTrash2 />
-                </button>
-      </td>
+              {getUserType === 'admin' ? (
+                <td>
+                  <button onClick={() => handleEdit(user.id)}>
+                    <FiEdit2 />
+                  </button>
+                  <button onClick={() => handleDelete(user.id)}>
+                    <FiTrash2 />
+                  </button>
+                </td>
+              ) : null}
+              
             </tr>
           ))}
         </tbody>
@@ -176,6 +201,19 @@ const HomePage = () => {
                 value={selectedUser.email}
                 onChange={event => setSelectedUser({ ...selectedUser, email: event.target.value })}
               />
+                {getUserType === 'admin' ? (
+                  <>
+                    <label>Tipo de Usuário</label>
+                    <select
+                      className='modal-input'
+                      value={selectedUser.userType}
+                      onChange={event => setSelectedUser({ ...selectedUser, userType: event.target.value })}
+                    >
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </>
+                ): null}
               <CustomButton label="Salvar" />
             </form>
             </>) : (
@@ -185,6 +223,15 @@ const HomePage = () => {
               <input className='modal-input-create' type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
               <input className='modal-input-create' type="password" placeholder="Senha" value={password} onChange={e => setPassword(e.target.value)} />
               <input className='modal-input-create' type="password" placeholder="Confirme a senha" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
+              <label>Tipo de Usuário</label>
+              <select
+                className='modal-input-create'
+                value={userType}
+                onChange={e => setUserType(e.target.value)}
+              >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
               <CustomButton label="Salvar"/>
             </form>
             </>

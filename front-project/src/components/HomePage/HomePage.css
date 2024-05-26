@@ -77,7 +77,8 @@
   align-self: flex-start;
   text-decoration: none; /* Remove o sublinhado do texto */
   color: white; /* Cor do texto preto */
-  transition: background-color 0.3s; /* Transição suave da cor de fundo */
+  transition: background-color 0.3s;
+  margin-right: 20%; /* Transição suave da cor de fundo */
 }
 
 .create-button:hover {
