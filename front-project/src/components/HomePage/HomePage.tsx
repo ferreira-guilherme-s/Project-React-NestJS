@@ -96,6 +96,11 @@ const HomePage = () => {
       alert("Erro ao deletar usuário");
     }
   }
+  
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/');
+  }
 
   const token = localStorage.getItem('token');
   console.log('Token do homepage', token);
@@ -137,6 +142,9 @@ const HomePage = () => {
 
   return (
     <>
+    <div className='exit-button'>
+      <button onClick={handleLogout}>Sair</button>
+    </div>
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
         {getUserType === 'admin' ? (
@@ -223,7 +231,6 @@ const HomePage = () => {
               <input className='modal-input-create' type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
               <input className='modal-input-create' type="password" placeholder="Senha" value={password} onChange={e => setPassword(e.target.value)} />
               <input className='modal-input-create' type="password" placeholder="Confirme a senha" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
-              <label>Tipo de Usuário</label>
               <select
                 className='modal-input-create'
                 value={userType}

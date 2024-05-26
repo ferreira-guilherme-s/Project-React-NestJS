@@ -12,6 +12,7 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [userType, setUserType] = useState("user");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -23,7 +24,8 @@ const Register = () => {
     }
 
     try {
-      const create = await createUser({ name, email: username, password });
+      setUserType("user");
+      const create = await createUser({ name, email: username, password, userType });
       if(create === 201){
         alert("Usuário criado com sucesso");
         navigate("/");
@@ -38,7 +40,6 @@ const Register = () => {
     <div className="container">
       <form onSubmit={handleSubmit}>
         <h1>Crie seu usuário</h1>
-        <input type="hidden" name="userType" value="user" />
         <div className="input-field">
           <CustomInput
             type="text"
