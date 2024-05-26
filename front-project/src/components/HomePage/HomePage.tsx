@@ -4,6 +4,7 @@ import './HomePage.css';
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 import Modal from '../Modal/Modal';
 import { CustomButton } from '../CustomButton/CustomButton';
+import { createUser } from '../../utils/CreateUser';
 
 interface User {
   id: string;
@@ -12,10 +13,18 @@ interface User {
 }
 
 const HomePage = () => {
+  const [status, setStatus] = useState('loading');
   const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  //Criação de usuário
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
 
   const handleCreate = () => {
     setModalTitle('Criar Usuário');
@@ -34,6 +43,37 @@ const HomePage = () => {
     }
     setIsModalOpen(true);
   }
+
+  const handleEditUser = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if(selectedUser!== null){
+      const response = await axios.put(`http://localhost:3000/users/updateUser/:${selectedUser.id}`, 
+      { name: selectedUser.name, email: selectedUser.email});
+      if(response.status === 200) {
+        window.location.reload();
+      } else {
+        alert("Erro ao editar usuário");
+      }
+    }
+  }
+
+  const handleCreateUser = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (password !== confirmPassword) {
+      alert("As senhas não coincidem");
+      return;
+    }
+    try {
+      const create = await createUser({ name, email, password });
+      if(create === 201) {
+        window.location.reload();
+      }
+    } catch (error) {
+      console.log(error);
+      alert('Erro ao criar usuário');
+    }
+  }
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   }
@@ -46,22 +86,43 @@ const HomePage = () => {
     }
   }
 
+  const token = localStorage.getItem('token');
+  console.log('Token do homepage', token);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/users/getAllUsers');
-        if (response.data.success && Array.isArray(response.data.data.users)) {
+        const response = await axios.get('http://localhost:3000/users/getAllUsers', {
+          headers: {
+            'auth-token': token
+          }
+        });
+        console.log(response);
+        if (response.status === 200) {
+          setStatus('success');
           setUsers(response.data.data.users);
         } else {
-          console.error('Erro: a resposta da API não é um array');
+          setStatus('error');
         }
       } catch (error) {
         console.error('Erro ao buscar usuários', error);
+        setStatus('error');
       }
     };
 
-    fetchUsers();
-  }, []);
+    if (token !== null && token !== '' && token !== undefined) {
+      fetchUsers();
+    } else {
+      setStatus('error');
+    }
+  }, [token]);
+
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
+
+  if (status === 'error') {
+    return <div>Error 404: Page not found</div>;
+  }
 
   return (
     <>
@@ -96,21 +157,35 @@ const HomePage = () => {
         </tbody>
       </table>
         <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-          <h2>{modalTitle}</h2>
+          <h2 className='title'>{modalTitle}</h2>
           {selectedUser && selectedUser.name ? (
             <>
-            <form>
-              <input className='modal-input' type="text" defaultValue={ selectedUser.name } />
-              <input className='modal-input' type="email" defaultValue={ selectedUser.email } />
+            <form onSubmit={handleEditUser}>
+              <input type="hidden" defaultValue={ selectedUser.id } />
+              <label>Nome</label>
+              <input
+                className='modal-input'
+                type="text"
+                value={selectedUser.name}
+                onChange={event => setSelectedUser({ ...selectedUser, name: event.target.value })}
+              />
+              <label>Email</label>
+              <input
+                className='modal-input'
+                type="email"
+                value={selectedUser.email}
+                onChange={event => setSelectedUser({ ...selectedUser, email: event.target.value })}
+              />
+              <CustomButton label="Salvar" />
             </form>
             </>) : (
             <>
-            <form>
-              <input type="text" placeholder="Nome" />
-              <input type="email" placeholder="Email" />
-              <input type="password" placeholder="Senha" />
-              <input type="password" placeholder="Confirme a senha" />
-              <CustomButton label="Salvar" />
+            <form onSubmit={handleCreateUser}>
+              <input className='modal-input-create' type="text" placeholder="Nome" value={name} onChange={e => setName(e.target.value)} />
+              <input className='modal-input-create' type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
+              <input className='modal-input-create' type="password" placeholder="Senha" value={password} onChange={e => setPassword(e.target.value)} />
+              <input className='modal-input-create' type="password" placeholder="Confirme a senha" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
+              <CustomButton label="Salvar"/>
             </form>
             </>
             )}

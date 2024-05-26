@@ -21,6 +21,8 @@ const Login = () => {
     });
     if (response.status === 200) {
       console.log("Usuário logado com sucesso");
+      console.log(response.data.token);
+      localStorage.setItem("token", response.data.token);
       return navigate("/dashboard");
     } else {
       alert("Usuário ou senha incorretos");

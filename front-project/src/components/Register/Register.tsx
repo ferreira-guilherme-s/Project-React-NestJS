@@ -4,26 +4,39 @@ import "../../GlobalCss/Global.css";
 import { Link } from "react-router-dom";
 import { CustomButton } from "../CustomButton/CustomButton";
 import CustomInput from "../CustomInput/CustomInput";
+import { createUser } from "../../utils/CreateUser";
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-  // Estados para armazenar as entradas do usuário
+const Register = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Função que é chamada quando o formulário é enviado
-  // const handleSubmit = (event) => {
-  //   // Impede que a página seja recarregada
-  //   event.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
 
-  //   // Faz o console log das credenciais do usuário
-  //   console.log("Dados de Login:", { username, password });
-  // };
+    if (password !== confirmPassword) {
+      alert("As senhas não coincidem");
+      return;
+    }
+
+    try {
+      const create = await createUser({ name, email: username, password });
+      if(create === 201){
+        alert("Usuário criado com sucesso");
+        navigate("/");
+      }
+    } catch (error) {
+      alert("Erro ao criar usuário");
+      window.location.reload();
+    }
+  };
 
   return (
     <div className="container">
-      <form>
+      <form onSubmit={handleSubmit}>
         <h1>Crie seu usuário</h1>
         <div className="input-field">
           <CustomInput
@@ -72,4 +85,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
